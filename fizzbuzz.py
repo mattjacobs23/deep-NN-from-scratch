@@ -14,8 +14,9 @@ import numpy as np
 
 from deepNN.train import train
 from deepNN.nn import NeuralNet
-from deepNN.layers import Linear, Tanh
+from deepNN.layers import Linear, Tanh, Sigmoid, Softmax, ReLU
 from deepNN.optimizer import SGD
+from deepNN.loss import MSE, Cross_Entropy
 
 
 def fizz_buzz_encode(x: int) -> List[int]:
@@ -50,19 +51,23 @@ targets = np.array([
     for x in range(101, 1024)    
 ])
 
+# Tanh Hidden Layer, 
 net = NeuralNet([
     Linear(input_size=10, output_size=50), # output size of 50 works well and doesnt take forever to train
     Tanh(),
     Linear(input_size=50, output_size=4)
 ])
 
-# default lr was too big, need to specify 0.001 instead (otherwise loss gets huge and overflows)
+# For Tanh - default lr was too big, need to specify 0.001 instead (otherwise loss gets huge and overflows)
 train(net,
       inputs,
       targets,
       num_epochs=5000,
-      optimizer=SGD(lr = 0.001))
+      optimizer=SGD(lr = 0.001),
+      #loss = Cross_Entropy()
+)
 
+score = 0
 for x in range(1, 101):
     predicted = net.forward(binary_encode(x))
     # predicted will be array of size 4. Again cheating not using batches here but still works
@@ -70,3 +75,6 @@ for x in range(1, 101):
     actual_idx = np.argmax(fizz_buzz_encode(x))
     labels = [str(x), "fizz", "buzz", "fizzbuzz"]
     print(x, labels[predicted_idx], labels[actual_idx])
+    if predicted_idx == actual_idx:
+        score += 1
+print("Total Accuracy = ", score, "%")

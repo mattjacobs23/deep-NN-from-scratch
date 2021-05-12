@@ -10,7 +10,7 @@ import numpy as np
 
 from deepNN.train import train
 from deepNN.nn import NeuralNet
-from deepNN.layers import Linear, Tanh
+from deepNN.layers import Linear, Tanh, Sigmoid, Softmax, ReLU
 
 inputs = np.array([
     [0, 0],

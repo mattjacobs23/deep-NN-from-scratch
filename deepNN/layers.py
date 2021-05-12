@@ -3,7 +3,6 @@ Our neural networks will be made up of layers
 Each layer needs to pass its inputs forward and propagate gradients backward.
 inputs -> Linear -> Tanh -> linear -> output
 
-Could add sigmoid, ReLU, etc.
 Could add LSTMs, Convolution layers
 """
 
@@ -103,6 +102,46 @@ def tanh_prime(x: Tensor) -> Tensor:
     y = tanh(x)
     return 1 - y ** 2
 
+def sigmoid(x: Tensor) -> Tensor:
+    return 1/(1 + np.exp(-x))
+
+def sigmoid_prime(x: Tensor) -> Tensor:
+    s = 1/(1 + np.exp(-x))
+    return s * (1 - s)
+
+def reLU(x: Tensor) -> Tensor:
+    return np.maximum(x, 0)
+
+def reLU_prime(x: Tensor) -> Tensor:
+    s = np.maximum(x, 0)
+    return (s > 0)*s
+
+def softmax(x: Tensor) -> Tensor:
+    max_x = np.max(x, axis=0, keepdims=True)
+    s = np.exp(x - max_x)
+    norm = np.sum(x, axis=0, keepdims=True)
+    s = s/norm
+    return s
+
+def softmax_prime(x: Tensor) -> Tensor:
+    max_x = np.max(x, axis=0, keepdims=True)
+    s = np.exp(x - max_x)
+    norm = np.sum(x, axis=0, keepdims=True)
+    s = s/norm
+    return s*(1-s)
+
 class Tanh(Activation):
     def __init__(self):
         super().__init__(tanh, tanh_prime)
+
+class Sigmoid(Activation):
+    def __init__(self):
+        super().__init__(sigmoid, sigmoid_prime)
+
+class ReLU(Activation):
+    def __init__(self):
+        super().__init__(reLU, reLU_prime)
+
+class Softmax(Activation):
+    def __init__(self):
+        super().__init__(softmax, softmax_prime)
